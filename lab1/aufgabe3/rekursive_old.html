@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		
+		var frameCount = 0;
+		
+	
+		
+		function drawCircle(x,y,r,context){
+			context.strokeStyle = "rgba(200,0,0,0.1)";
+			context.beginPath();    
+			context.arc(x,y,r,0,Math.PI*2);
+			context.stroke();
+		}
+		
+			
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		
+		function drawRecursiveCircles(x,y,r){
+			/* 		 
+			var nr = r/2;    //new radius
+			setTimeout(function(){    //this is executed asynchronously
+				drawCircle(x,y,r,context);
+				drawRecursiveCircles(x+r+nr,y,nr);
+				drawRecursiveCircles(x-r-nr,y,nr);
+				drawRecursiveCircles(x,y+r+nr,nr);
+				drawRecursiveCircles(x,y-r-nr,nr);
+			},500); 
+			*/
+		
+			var nr = r/2;    //new radius
+			setTimeout(function(){    //this is executed asynchronously
+				drawCircle(x,y,r,context);
+				drawRecursiveCircles(x+r+nr,y,nr);
+				drawRecursiveCircles(x-r-nr,y,nr);
+			},500);
+		
+	}
+		
+		var draw = function() {
+			
+			
+			drawRecursiveCircles(canvas.width/2,canvas.height/2,canvas.width/6);
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

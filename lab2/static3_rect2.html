@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+
+ <script type="text/javascript" src="../lib/perlin.js"></script>
+ <script type="text/javascript" src="../lib/basics.js"></script>
+ <script type="text/javascript" src="../lib/particle.js"></script>
+
+  <body>    
+    <canvas id="myCanvas" ></canvas>
+
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+
+	    //particels
+		var N = 310;
+   		var particles = []; 
+   		var size = 1;
+        var particelColor = "rgba(255,255,255,0.9)"
+
+   		var positions = [];
+
+  	 	var forces = [{x:0.01, y:0}];
+  	 	var vel = [{x:0, y:0}];
+		
+
+        var distanceThreshold = 120;
+
+		var frameCount = 0;
+
+
+		var init = function()
+		{
+			for (var i=0; i<N; i++) {
+             particles[i] = new Particle(100000000, Basics.randInt(size,canvas.width),Basics.randInt(size,canvas.height),size);
+             particles[i].force = {x:noise.simplex3(Math.random(),0,Math.random()), y:noise.simplex3(Math.random(),0,Math.random())};
+			}
+
+			
+		};
+
+
+        function getDistance (p0, p1) {
+            var dir = { x: p0.pos.x - p1.pos.x,
+                        y: p0.pos.y - p1.pos.y};
+            return Math.sqrt(dir.x*dir.x + dir.y*dir.y);
+        }
+
+        function respawnParticle (index) {
+            // reinit position & velocity
+            var x0 = (Math.random()-0.5)*100+canvas.width/2;
+            var y0 = (Math.random()-0.5)*100+canvas.height/2;
+            particles[index].pos = {x:x0, y:y0};
+            particles[index].vel = {x:0, y:0};
+            particles[index].lifeTime = {lifeTime:noise.simplex3(Math.random(),0,Math.random())*200+4000};
+        }
+
+
+		function updateParticles()
+        {
+
+            for (var i=0; i<N; i++) {
+                
+                // UPDATE POSITIONS: in each timestep add velocity on current position
+                particles[i].pos.x = Math.round(particles[i].pos.x +particles[i].force.x);
+                particles[i].pos.y = Math.round(particles[i].pos.y +particles[i].force.y);
+
+                particles[i].lifeTime--;
+
+                }
+            
+        }
+
+        function connect(p0,indexP0)
+        {
+
+            for (var i=0; i<N; i++) 
+            {
+                
+                if(i != indexP0)           
+                {
+                    var dist = getDistance(p0,particles[i]);
+
+            
+                    if (dist < distanceThreshold)
+                    {
+                        context.strokeStyle="#FFFFFF";
+                        context.beginPath();
+                        context.moveTo (p0.pos.x+particles[i].size/2, p0.pos.y+particles[i].size/2);
+                        context.lineTo (particles[i].pos.x+particles[i].size/2, particles[i].pos.y+particles[i].size/2);
+                        if((i+1) < N)
+                        {
+                            dist = getDistance(p0,particles[i+1]);
+                            if(dist < distanceThreshold)
+                            {   
+                                context.lineTo (particles[i+1].pos.x+particles[i+1].size/2, particles[i+1].pos.y+particles[i+1].size/2);
+                                context.closePath();
+                            }
+                        }
+                        context.stroke();
+                        context.fillStyle= Basics.randomRGBAColor();
+                        context.fill(); 
+                    } 
+
+                    //context.closePath();
+                }    
+            }
+        }
+
+		var contextdraw = function() {
+			
+	        context.fillStyle   =  "#5882FF";
+      	    //context.fillRect(0, 0, canvas.width, canvas.height);	
+
+            updateParticles();
+            for (var i=0; i<N; i++) {
+                particles[i].endlessBounds();
+                particles[i].draw(context,particelColor);
+
+              
+                connect(particles[i],i)
+                
+	        }
+
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(contextdraw);
+      	};
+
+		// start the loop
+		init();
+      	contextdraw();
+
+
+    </script>
+
+  </body>
+
+</html>      

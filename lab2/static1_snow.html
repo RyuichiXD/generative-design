@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+
+ <script type="text/javascript" src="../lib/perlin.js"></script>
+ <script type="text/javascript" src="../lib/basics.js"></script>
+ <script type="text/javascript" src="../lib/particle.js"></script>
+
+  <body>    
+    <canvas id="myCanvas" ></canvas>
+
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		
+
+		var N = 1000;
+   		var particles = []; 
+  	 	var forces = [{x:0.01, y:0}];
+  	 	var vel = [{x:0, y:0}];
+		var frameCount = 0;
+		var chance=1000;
+		var sim =0;
+		var colorChangeX=1;
+		var size = 10;
+
+		var init = function()
+		{
+			for (var i=0; i<N; i++) {
+             particles[i] = new Particle(50, 50, Math.round(canvas.height/2),size);
+			}
+			
+		};
+
+		function luckyParticual(particles)
+		{
+			
+			var luckyNumber=Basics.randInt(0,chance);
+			var draw = Basics.randInt(0,chance);
+			if(luckyNumber == draw)
+			{
+				forces[0].x = Math.abs(noise.simplex3(Math.random(),0,Math.random())/10);
+				forces[0].y = Math.abs(noise.simplex3(-Math.random(),Math.random(),Math.random())/10);
+				//forces[0].y = Basics.randInt(-10,10)/100;
+				particles.setVel(vel)
+				sim +=1;
+			}
+	//		return forces; 
+		};
+
+		var draw = function() {
+			
+	        context.fillStyle   = "rgba(0,0,0,1)";
+      	    context.fillRect(0, 0, canvas.width, canvas.height);	
+	       
+	        for (var i=0; i<N; i++) {
+           // Particle.checkBounds(100,0, Basics.randInt(0,canvas.height),particles,i);
+            luckyParticual(particles[i]);
+            particles[i].update(forces);
+            particles[i].endlessBounds();
+            particles[i].drawInColor(context,colorChangeX);
+        	}
+
+
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+		init();
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

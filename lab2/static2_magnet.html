@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+
+ <script type="text/javascript" src="../lib/perlin.js"></script>
+ <script type="text/javascript" src="../lib/basics.js"></script>
+ <script type="text/javascript" src="../lib/particle.js"></script>
+
+  <body>    
+    <canvas id="myCanvas" ></canvas>
+
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		
+		var A_attractors =32; //even numbers
+		var attractors=[];
+		var posOffsetY = canvas.height/5
+	
+		var N = 3500;
+   		var particles = []; 
+   		var size = 10;
+
+   		var positions = [];
+
+  	 	var forces = [{x:0.01, y:0}];
+  	 	var vel = [{x:0, y:0}];
+		
+		var frameCount = 0;
+		
+		var chance=1000; 
+		
+		var colorChangeX =2;
+		var colorRGBAPos ="rgba(255,0,0,0.8)";
+		var colorRGBANeg ="rgba(0,0,255,0.8)";
+
+
+		var size = 10;
+
+
+	    function sign (x) {
+	        if (x<0) return -1;
+	        else return 1;
+	    }
+
+		var init = function()
+		{
+			for (var i=0; i<N; i++) {
+             particles[i] = new Particle(1, canvas.width/2,canvas.height/2,size);
+			}
+			//Negative pole
+			for (var i=0; i<A_attractors/2; i++) {
+			 var S = noise.simplex3(Math.random(),0,0)*500+400;
+             attractors[i] = new Particle(50, Math.round(canvas.width-4*size), Math.round(canvas.height)-(i+1)*size*4-posOffsetY,size);
+             attractors[i].s = S*sign(Math.random()-1.5);
+			}
+
+			//Positive pole
+			for (var i=A_attractors/2; i<A_attractors; i++) {
+			 var S = noise.simplex3(Math.random(),0,0)*300+500;
+             attractors[i] = new Particle(50, size/2, Math.round(canvas.height)-(i-A_attractors/2+1)*size*4-posOffsetY,size);
+             attractors[i].s = S*sign(Math.random()+0.5);
+			}
+			
+		};
+
+		function luckyParticual(particles)
+		{
+			
+			var luckyNumber=Basics.randInt(0,chance);
+			var draw = Basics.randInt(0,chance);
+			if(luckyNumber == draw)
+			{
+				forces[0].x = Math.abs(noise.simplex3(Math.random(),0,Math.random())/10);
+				forces[0].y = Math.abs(noise.simplex3(-Math.random(),Math.random(),Math.random())/10);
+				//forces[0].y = Basics.randInt(-10,10)/100;
+				particles.setVel(vel)
+				
+			}
+	//		return forces; 
+		};
+
+
+        function getDistance (p0, p1) {
+            var dir = { x: p0.x - p1.x,
+                        y: p0.y - p1.y};
+            return Math.sqrt(dir.x*dir.x + dir.y*dir.y);
+        }
+
+        function respawnParticle (index) {
+            // reinit position & velocity
+            var x0 = (Math.random()-0.5)*100+canvas.width/2;
+            var y0 = (Math.random()-0.5)*100+canvas.height/2;
+            particles[index].pos = {x:x0, y:y0};
+            particles[index].vel = {x:0, y:0};
+            particles[index].lifeTime = {lifeTime:Math.random()*200+4000};
+        }
+
+        function getAttraction (particlePos, attractorPos) {
+            
+            // calc direction vector
+            var dir = {x:0, y:0};
+            dir.x = attractorPos.x - particlePos.x;
+            dir.y = attractorPos.y - particlePos.y;
+        
+            // calc length aka distance
+            var dist = Math.sqrt(dir.x*dir.x + dir.y*dir.y);
+            
+            if (dist<1)
+                dist = 1;
+            // normalize vector
+            dir.x = dir.x / dist;
+            dir.y = dir.y / dist;
+            
+            // make force dependent on distance
+            dir.x = dir.x / (dist * dist);
+            dir.y = dir.y / (dist * dist);
+            
+            return dir;
+        }
+
+
+		function updateParticles()
+        {
+
+            for (var i=0; i<N; i++) {
+                
+                
+                for (var j=0; j<A_attractors; j++) {
+                    var attractionForce = getAttraction (particles[i].pos, attractors[j].pos);
+                    particles[i].vel.x += (attractionForce.x*attractors[j].s);
+                    particles[i].vel.y += (attractionForce.y*attractors[j].s);
+                }
+                
+                var damping = 0.99;
+                particles[i].vel.x *= damping;
+                particles[i].vel.y *= damping;
+
+                
+                // UPDATE POSITIONS: in each timestep add velocity on current position
+                particles[i].pos.x += particles[i].vel.x;
+                particles[i].pos.y += particles[i].vel.y;
+
+                particles[i].lifeTime--;
+
+                // kill particle if close to attractor
+                
+                var minD = 2;
+                for (var j=0; j<A_attractors; j++) {
+                    if (getDistance(particles[i].pos, attractors[j])<minD || particles[i].lifeTime<=0) {
+                        respawnParticle(i);
+                    }
+                }
+            }
+        }
+
+		var contextdraw = function() {
+			
+	        context.fillStyle   = "rgba(0,0,0,1)";
+      	    context.fillRect(0, 0, canvas.width, canvas.height);	
+	       
+	       updateParticles();
+	        for (var i=0; i<N; i++) {
+
+            particles[i].endlessBounds();
+            particles[i].drawInColor(context,colorChangeX);
+
+       		 }
+
+        	//Abstractor
+        	
+        	for (var i=0; i<A_attractors; i++) 
+        	{
+        		if ( i < A_attractors/2)
+        	 	 attractors[i].draw(context,colorRGBANeg);
+        	 	else
+        	 	 attractors[i].draw(context,colorRGBAPos);
+        	}
+
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(contextdraw);
+      	};
+
+		// start the loop
+		init();
+      	contextdraw();
+
+
+    </script>
+
+  </body>
+
+</html>      

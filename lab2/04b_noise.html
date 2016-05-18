@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+
+
+  <body>
+    <canvas id="myCanvas" width="1000" height="1000"></canvas>
+    <script type="text/javascript" src="perlin.js"></script>
+    <script>
+
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+ 		var frameCount = 0;
+		
+
+        var resX = 150;
+        var resY = 150;
+
+		var draw = function() {
+
+
+            context.fillStyle   = "rgba(255,255,255,0.9)";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            context.strokeStyle = "#000000";
+            
+            for (var x=0; x<resX; x++) {
+    			for (var y=0; y<resY; y++) {
+
+                    var x0 = x*canvas.width*1.0  / resX;
+                    var y0 = y*canvas.height*1.0 / resY;
+
+                    var fx = Math.sin(frameCount*0.01)*0.1+0.1;
+                    var fy = Math.sin(frameCount*0.01)*0.1+0.1;
+                    var t = frameCount*0.01;
+
+                    var dX = noise.simplex3 (fx*x, fy*y, t)*50;
+                    var dY = noise.simplex3 (fx*x+5, fy*y+5, t)*50;
+
+
+                    context.beginPath();
+                    context.moveTo (x0-dX/2, y0-dY/2);
+                    context.lineTo (x0+dX/2, y0+dY/2);
+                    context.stroke();
+                }
+        	}
+
+            frameCount += 1;
+            requestAnimationFrame(draw);
+      	};
+
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

@@ -1,0 +1,77 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//get windows size
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+			
+		function drawCircle(x,y,r,context){
+			context.strokeStyle = "rgba(200,0,0,0.1)";
+			context.beginPath();    
+			context.arc(x,y,r,0,Math.PI*2);
+			context.stroke();
+		}
+		
+			
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		
+		function drawRecursiveCircles(x,y,r){
+		
+			var nr = r/2;    //new radius
+			setTimeout(function(){    //this is executed asynchronously
+				drawCircle(x,y,r,context);
+				//right and left
+				drawRecursiveCircles(x+r+nr,y,randomIntFromInterval(nr,nr/2));
+				drawRecursiveCircles(x-r-nr,y,randomIntFromInterval(nr,nr/2));
+				//top and down area
+				drawRecursiveCircles(x,y+r+nr,nr);
+				drawRecursiveCircles(x,y-r-nr,nr);
+			},500);
+		
+	}
+		
+		var draw = function() {
+			
+			//start point
+			drawRecursiveCircles(canvas.width/2,canvas.height/2,canvas.width/6);
+
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

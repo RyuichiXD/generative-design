@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		
+		
+		// VARIABLES
+		var frameCount;
+		var N = 20;
+		var positionXTeiler= Math.floor(canvas.width/N);
+		var wellenreihen = 5;
+		var abstandWellen= 30;
+		var size = 120;
+		
+		// classes
+		var color = {};
+		color.r = 0;
+		color.g = 0;
+		color.b = 100;
+
+		var offset = {};
+		offset.x = 0;
+		offset.y = 0;
+
+		var init = function() {
+
+		  frameCount = 0;
+		}
+		
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		var frameCount = 0;
+		
+		
+		var draw = function() {
+			
+			context.clearRect (0, 0, canvas.width, canvas.height);  
+			context.fillStyle   = "rgba("+color.r+","+color.g+","+color.b+",0.9)";
+
+		//Spalte
+		for (i=0; i<N; i++) { 
+		
+		
+			//Reihe
+			var rowXOffset = randomIntFromInterval(0,10);
+			for (n=0; n<wellenreihen; n++) { 
+				
+				context.save();
+				context.translate(positionXTeiler*i+n*20+10,canvas.height-100+n*30);//canvas.height-j*10);
+				context.rotate(frameCount*0.005 + i);
+				//context.translate(-5,-5);
+				
+				//context.fillRect (0,0,size,size);
+				
+					context.beginPath();
+					context.arc(150,0,size,0,Math.PI*2,true);
+					context.closePath();
+					context.fill();
+				context.restore();
+			}
+		}		
+			
+			// for (i=0; i<N; i++) { 
+			
+				// for (j=0; j<5; j++) {
+				  // context.save();
+				  // context.translate(i*abstandWellen+100+Math.sin(frameCount*0.1)*59,j*abstandWellen+100);//canvas.height-j*10);
+				  // context.rotate(frameCount*0.05 + i);
+				  // context.translate(-10,-10);
+				  // context.fillRect (0,0,size,size);
+			
+				  // context.restore();
+				// }
+			// }
+			
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+		init();
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

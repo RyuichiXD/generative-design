@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		//Variablen
+		var frameCount = 0;
+		var sizeX = canvas.width;
+		var sizeY = canvas.height;
+		
+		var size;
+		var startSize=10;
+		var rotateAmplitude=10;
+		var counts = 20;
+		
+		context.strokeStyle = "rgba(0,0,0,1)";
+		context.fillStyle = "rgba(50,0,0,0.1)";
+		
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		
+		var draw = function() {
+			
+			size = startSize;
+			context.clearRect(0, 0, canvas.width, canvas.height);  
+			
+			
+			//context.strokeRect(canvas.width/2-size/2,canvas.height/2-size/2,size,size);
+			
+			for(var i = 1; i<counts;i++)
+			{
+				size = Math.floor(size+size*0.5);
+				context.save();
+				
+				context.rotate(i*0.1*Math.PI/180);
+				
+				context.translate(rotateAmplitude*Math.sin(i/4*frameCount*0.1),rotateAmplitude*Math.cos(i/4*frameCount*0.1));
+				//context.translate(canvas.width/2-size/2,canvas.height/2-size/2);
+				context.translate(-25,-25);
+				context.fillStyle = "rgba("+randomIntFromInterval(50,80) +",0,0,0.1)";
+				context.fillRect(canvas.width/2-size/2,canvas.height/2-size/2,size,size);
+				//context.fill();
+				
+				context.restore();
+			}
+			
+			//context.setTransform(1, 0, 0, 1, 0, 0);
+			
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

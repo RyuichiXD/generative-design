@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	}
+</style>
+
+  <body>
+  	
+	<div id = "container">
+	
+		<canvas id="myCanvas" ></canvas>
+	
+	</div>
+
+    <script>
+	
+	
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		var shapeSelection = function(shapeNumber,x,y)
+		{
+			//Style
+      		context.fillStyle   = "rgba(40,50,50,0.1)";
+			context.strokeStyle = "rgba("+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +",0.3)";
+			
+			//size = randomIntFromInterval(40,70);
+			
+			switch(shapeNumber){
+			//ninja Stern
+			case 1:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x-25 + size*0.5, canvas.height/2+y);
+				context.lineTo(canvas.width/2+x-25 + size*0.35,canvas.height/2+y + size*0.35);
+				context.lineTo(canvas.width/2+x-25, canvas.height/2+y + size*0.5);
+				context.lineTo(canvas.width/2+x-25 + size*0.35, canvas.height/2+y + size*0.65);
+				context.lineTo(canvas.width/2+x-25 + size*0.5, canvas.height/2+y + size);
+				context.lineTo(canvas.width/2+x-25 + size*0.65, canvas.height/2+y + size*0.65);
+				context.lineTo(canvas.width/2+x-25 + size, canvas.height/2+y +size*0.5);
+				context.lineTo(canvas.width/2+x-25 + size*0.65, canvas.height/2+y + size*0.35);
+				context.lineTo(canvas.width/2+x-25 + size*0.5, canvas.height/2+y);
+				context.stroke();  
+				
+				break;
+			//leeres Rechteck	
+			case 2:
+				context.strokeRect(canvas.width/2+x-size/2, canvas.height/2+y-size/2,size,size);
+				break;
+			//offener V
+			case 3:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x ,canvas.height/2+y );
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y +25);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y -25);
+				context.stroke();
+				break;
+			//offener dreieck 2
+			case 4:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x ,canvas.height/2+y );
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y +25);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y -25);
+				context.lineTo(canvas.width/2+x-20,canvas.height/2+y);
+				context.stroke();
+				break;
+			//line
+			case 5:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y +25);
+				context.stroke();
+				break;
+			// X
+			case 6:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y +25);
+				context.stroke();
+				context.beginPath();
+				context.moveTo(canvas.width/2+x+25,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x,canvas.height/2+y +25);
+				context.stroke();
+				break;
+			//Sanduhr
+			case 7:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y +25);
+				context.stroke();
+				context.beginPath();
+				context.moveTo(canvas.width/2+x+25,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x,canvas.height/2+y +25);
+				context.stroke();
+				context.beginPath();
+				
+				context.moveTo(canvas.width/2+x,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y);
+				context.stroke();
+				context.moveTo(canvas.width/2+x,canvas.height/2+y+25);
+				context.lineTo(canvas.width/2+x+25,canvas.height/2+y+25);
+				context.stroke();
+				break;
+			//Wurzel
+			case 8:
+				context.beginPath();
+				context.moveTo(canvas.width/2+x,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+15,canvas.height/2+y);
+				
+				context.moveTo(canvas.width/2+x+15,canvas.height/2+y);
+				context.lineTo(canvas.width/2+x+15+13,canvas.height/2+y+26);
+				
+				context.moveTo(canvas.width/2+x+15+13,canvas.height/2+y+26);
+				context.lineTo(canvas.width/2+x+15+26,canvas.height/2+y-20);
+				
+				context.moveTo(canvas.width/2+x+15+26,canvas.height/2+y-20);
+				context.lineTo(canvas.width/2+x+15+26+13,canvas.height/2+y-20);
+				context.stroke();
+
+				break;
+				
+			default: 
+				context.strokeRect(canvas.width/2+x, canvas.height/2+y, size,size);
+			}
+		}
+	
+	
+		var amplitude = 110; //Abstand
+		var frameCount = 0;
+		var size = 50; 	//shape size
+		var shapesSelector = randomIntFromInterval(1,8);
+		
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		var context = canvas.getContext('2d');
+
+		//Display text
+		context.font="25px Verdana";
+		// Create gradient
+		var gradient=context.createLinearGradient(0,0,canvas.width,0);
+		gradient.addColorStop("0","magenta");
+		gradient.addColorStop("0.5","blue");
+		gradient.addColorStop("1.0","red");
+		// Fill with gradient
+		context.strokeStyle=gradient;
+		context.strokeText("Click to extend or refresh for a different shape",canvas.width/2-280,20);
+
+	
+		document.getElementById('container').onclick = function() {
+			amplitude = amplitude+size;
+			//shapesSelector = randomIntFromInterval(1,8)
+		}		
+		
+		var draw = function() {
+		
+			var x = amplitude*Math.sin (frameCount*0.02);
+			var y = amplitude*Math.cos (frameCount*0.02);		
+
+			shapeSelection(shapesSelector,x,y);
+			//shapeSelection(4,x,y);
+						
+			// count the frame and loop the animation
+        	frameCount = frameCount+35; //Phase
+        	requestAnimationFrame(draw);
+			
+      	};
+
+		// start the loop
+      	draw();
+
+    </script>
+
+  </body>
+
+</html>      

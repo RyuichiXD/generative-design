@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//Hole Fenstergroesse
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+		
+		var frameCount=0;
+		var x=0;
+		var y=0;
+		
+		var x2=0;
+		
+		var size = 10;
+
+		var colorsL = []; 
+		var colorsR = []; 
+		var colorsT = []; 
+		var colorsD = []; 
+				
+		var init = function()
+		{
+
+			//Fill with colors
+			for (var i=0; i<canvas.height; i++) {
+				//left and right walks
+				colorsL.push("rgba("+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +",0.1)");
+				colorsR.push("rgba("+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +",0.1)");
+			}
+			
+			for (var i=0; i<canvas.width; i++) {
+				//top and down walks
+				colorsT.push("rgba("+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +",0.1)");
+				colorsD.push("rgba("+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +","+randomIntFromInterval(10,250) +",0.1)");
+			}
+		}
+
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		var draw = function() {
+		//left right
+		if(x < canvas.width/2){		
+			for(var line = 0; line<canvas.height; line = line +2*size)
+			{
+			context.fillStyle   = colorsL[line];
+			context.fillRect(x, line, size, size);
+				
+			context.fillStyle   = colorsR[line];
+			context.fillRect(canvas.width-x, line, size, size);				
+			}
+			
+			x=x+1;
+		}	
+		//top down
+		if(x < canvas.height/2){	
+			for(var colum = 3; colum<canvas.width; colum = colum +2*size)
+			{
+				context.fillStyle   = colorsT[colum];				
+				context.fillRect(colum, y, size, size);
+			
+				context.fillStyle   = colorsD[colum];				
+				context.fillRect(canvas.width-colum, canvas.height -y, size, size);
+			}
+			y=y+1;
+		}
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+		init();
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      

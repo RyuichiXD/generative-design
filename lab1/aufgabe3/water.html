@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="author" content="Samed Sulanc">
+	<meta name="version" content="1.0">
+	<meta name="date" content="19/04/2016">
+</head>
+<style>
+
+<!-- 100% ausnutzung des Bereichs -->
+	body, html {
+	  height: 100%;
+	  width: 100%;
+	  background-color: #f00;
+	}
+</style>
+
+  <body>
+    <canvas id="myCanvas" ></canvas>
+
+    <script>
+		//get window size
+		var canvas = document.getElementById( "myCanvas" );
+		canvas.width = window.innerWidth;   /// equal to window dimension
+		canvas.height = window.innerHeight;
+	
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		
+		// VARIABLES
+		var frameCount=0;
+		//waves
+		var N = 30;
+		var positionXTeiler= Math.floor(canvas.width/(N-N/2));
+		var size = 50;
+		var xOffset = 200;
+		var colors = [];
+		var amplitude = 200;
+		var wavesCount = 3;
+		
+		//rain
+		var frameCount = 0;
+		var speed = 3;
+		var rainlength= 10;
+		var raindrops = 15;
+		var rainsize = 5;
+		
+		//cloud
+		var cloudCount = 5;
+		var cloudSpeed = 3;
+		var cloudBubble;
+		var cloudX = [];
+		var cloudY = [];
+		var translateX =0;
+		
+		function randomIntFromInterval(min,max)
+		{
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		
+		var init = function()
+		{
+			//waves
+			colors.push("rgba(0,0,128,1)");
+			colors.push("rgba(0,0,255,1)");
+			colors.push("rgba(47,86,233,1)");
+			
+			//cloud
+			//reset
+			cloudX = [];
+			cloudY = [];
+			cloudBubble = randomIntFromInterval(5,6);
+			for(var i = 0 ; i < cloudCount ; i++)
+			{
+				cloudX.push(randomIntFromInterval(-canvas.width/2,canvas.width));
+				cloudY.push(randomIntFromInterval(10,canvas.height/5));
+			}
+		}
+		
+				
+
+		var draw = function() {
+		
+		context.clearRect (0, 0, canvas.width, canvas.height);	
+		
+		//background
+		context.fillStyle="black";
+		context.fillRect(0,0,canvas.width, canvas.height);
+		
+		//moon
+		context.fillStyle = "rgba(251,192,45,0.8)"
+		context.beginPath();
+		context.arc(canvas.width/5,100,40,0,Math.PI*2,true);
+		context.closePath();
+		context.fill();
+		
+		context.fillStyle = "rgba(0,0,0,1)"
+		context.beginPath();
+		context.arc(canvas.width/5+40,100,50,0,Math.PI*2,true);
+		context.closePath();
+		context.fill();
+		
+		
+		//clouds
+		
+		for(var i = 0; i<cloudCount; i++)
+		{
+		    var positionX = cloudX[i];
+			var positionY = cloudY[i];
+			
+			if(frameCount % cloudSpeed == 0){ 
+				translateX = translateX+1;
+			}
+			
+			for(var n = 0; n<cloudBubble; n++)
+			{
+				context.save();
+				context.translate(translateX,0);
+				context.fillStyle = "rgb(117,117,117)"
+				context.beginPath();
+				context.arc(positionX+50*Math.sin(n*10),positionY+40*Math.cos(n*10),43,0,Math.PI*2,true);
+				context.closePath();
+				context.fill();
+				
+				context.restore()
+			}	
+		}
+		if(frameCount % canvas.width == 0)
+		{
+			init();
+			translateX=0;
+		}
+		
+		//rain
+		// wenn framecount / speed  kein Rest ergibt wird ein Regentropfen gezeichnet
+			if(frameCount % speed == 0)
+			{
+				//gibt die anzahl der regentropfen
+				for (var n=0; n<raindrops; n++) {
+				
+					var x = Math.random()*canvas.width;
+					var y = Math.random()*canvas.height;
+					//gibt die laenge der Tropfen
+					for (var i=0; i<rainlength; i++) {
+						y= y+1;
+						context.fillStyle   = "rgba(224,224,224,0.9)";
+						context.fillRect(x, y, rainsize, rainsize);
+					}	
+				}
+			}
+		
+		
+		//waves
+        for (n=wavesCount-1; n>=0; n--) { 
+          for (i=0; i<N; i++) { 
+				var x = amplitude*Math.sin (frameCount*0.02+n*Math.PI/2);
+				context.save();
+				context.fillStyle = colors[n];
+				context.beginPath();
+				context.arc(positionXTeiler*i+x-xOffset,canvas.height-n*20,size,0,Math.PI*2,true);
+				context.closePath();
+				context.fill();
+				
+				context.restore();
+			}
+		}       
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+		init();
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      
